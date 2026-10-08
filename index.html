@@ -3,265 +3,402 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SwapNorm — DEX на Base</title>
+    <title>Base Match-3</title>
     <style>
-        * {
+        body {
             box-sizing: border-box;
             margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: #0b0f19;
-            color: #f1f5f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            background: #0052ff;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
         }
-        .dex-container {
-            background-color: #1e293b;
+
+        .game-container {
+            background: #0f172a;
             border-radius: 20px;
-            padding: 24px;
-            width: 420px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border: 1px solid #334155;
-        }
-        .dex-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .dex-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #38bdf8;
-        }
-        .connect-btn {
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .connect-btn:hover {
-            background-color: #2563eb;
-        }
-        .swap-box {
-            background-color: #0f172a;
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border: 1px solid #1e293b;
-        }
-        .swap-box label {
-            font-size: 13px;
-            color: #94a3b8;
-            display: block;
-            margin-bottom: 6px;
-        }
-        .input-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .swap-input {
-            background: transparent;
-            border: none;
-            color: #ffffff;
-            font-size: 24px;
-            width: 60%;
-            outline: none;
-        }
-        .token-select {
-            background-color: #334155;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            outline: none;
-        }
-        .action-btn {
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            max-width: 500px;
             width: 100%;
-            background-color: #3b82f6;
+            border: 2px solid white;
+        }
+
+        h1 {
             color: white;
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #0022aa;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 1px solid white;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 3px;
+            background: #001133;
+            padding: 10px;
+            border-radius: 15px;
+            margin: 20px auto;
+            max-width: 400px;
+            border: 2px solid #00d2ff;
+        }
+
+        .gem {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            border: 2px solid transparent;
+            user-select: none;
+            background: #0052ff;
+        }
+
+        .gem:hover {
+            transform: scale(1.1);
+            border-color: #00d2ff;
+        }
+
+        .gem.selected {
+            border-color: #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.8);
+            transform: scale(1.1);
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        .btn {
+            background: white;
+            color: #0052ff;
             border: none;
-            padding: 16px;
-            border-radius: 14px;
-            font-size: 18px;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 10px;
+            transition: all 0.3s ease;
+            margin: 0 10px;
         }
-        .action-btn:hover {
-            background-color: #2563eb;
+
+        .btn:hover {
+            background: #00d2ff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
-        .status-log {
+
+        .message {
             margin-top: 15px;
-            font-size: 13px;
-            color: #cbd5e1;
-            background: #0f172a;
             padding: 10px;
-            border-radius: 8px;
-            word-break: break-all;
-            max-height: 100px;
-            overflow-y: auto;
+            border-radius: 10px;
+            font-weight: bold;
+            min-height: 20px;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 0, 0.2);
+            color: #76ff76;
+        }
+
+        .message.info {
+            background: rgba(0, 210, 255, 0.2);
+            color: #00d2ff;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .gem.matched {
+            animation: bounce 0.6s ease;
+        }
+
+        @media (max-width: 480px) {
+            .gem {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+            h1 { font-size: 1.8rem; }
+            .game-container { padding: 15px; }
         }
     </style>
 </head>
 <body>
-
-<div class="dex-container">
-    <div class="dex-header">
-        <div class="dex-title">SwapNorm</div>
-        <button id="connectWalletBtn" class="connect-btn" onclick="connectWallet()">Подключить</button>
-    </div>
-
-    <div class="swap-box">
-        <label>Продаете</label>
-        <div class="input-row">
-            <input type="number" id="amountIn" class="swap-input" placeholder="0.0">
-            <select id="tokenIn" class="token-select">
-                <option value="ETH">ETH</option>
-                <option value="USDC">USDC</option>
-                <option value="USDbC">USDbC</option>
-                <option value="DAI">DAI</option>
-            </select>
+    <div class="game-container">
+        <h1>🌐 Base Match-3</h1>
+        
+        <div class="score-board">
+            <div>Очки: <span id="score">0</span></div>
+            <div>Ходы: <span id="moves">30</span></div>
         </div>
-    </div>
 
-    <div class="swap-box">
-        <label>Получаете (приблизительно)</label>
-        <div class="input-row">
-            <input type="number" id="amountOut" class="swap-input" placeholder="0.0" disabled>
-            <select id="tokenOut" class="token-select">
-                <option value="USDC">USDC</option>
-                <option value="ETH">ETH</option>
-                <option value="USDbC">USDbC</option>
-                <option value="DAI">DAI</option>
-            </select>
+        <div class="game-board" id="gameBoard"></div>
+
+        <div class="controls">
+            <button class="btn" onclick="newGame()">Новая игра</button>
+            <button class="btn" onclick="showHint()">Подсказка</button>
         </div>
+
+        <div class="message" id="message">Собери 3 крипто-актива в ряд!</div>
     </div>
 
-    <button class="action-btn" onclick="executeRealSwap()">Выполнить обмен</button>
+    <script>
+        const BOARD_SIZE = 8;
+        const GEM_TYPES = ['🔷', '⚡', '🪙', '🔹', '🔗', '🚀'];
+        const GEM_CLASSES = ['b1', 'b2', 'b3', 'b4', 'b5', 'b6'];
+        
+        let board = [];
+        let selectedGem = null;
+        let score = 0;
+        let moves = 30;
+        let gameActive = true;
 
-    <div id="statusLog" class="status-log" style="display:none;">Лог транзакции появится здесь...</div>
-</div>
+        function initGame() {
+            const gameBoard = document.getElementById('gameBoard');
+            gameBoard.innerHTML = '';
+            board = [];
+            
+            for (let row = 0; row < BOARD_SIZE; row++) {
+                board[row] = [];
+                for (let col = 0; col < BOARD_SIZE; col++) {
+                    const gemType = Math.floor(Math.random() * GEM_TYPES.length);
+                    board[row][col] = gemType;
+                    
+                    const gemElement = document.createElement('div');
+                    gemElement.className = `gem`;
+                    gemElement.textContent = GEM_TYPES[gemType];
+                    gemElement.dataset.row = row;
+                    gemElement.dataset.col = col;
+                    gemElement.addEventListener('click', () => selectGem(row, col));
+                    
+                    gameBoard.appendChild(gemElement);
+                }
+            }
+            removeInitialMatches();
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-<script>
-    const CONTRACT_ADDRESS = "0x002B4e7c39865d03E27D618A2AF2Bd8C54EDd549";
-    
-    const TOKEN_ADDRESSES = {
-        "ETH": "0x4200000000000000000000000000000000000006",
-        "USDC": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-        "USDbC": "0xd9aAEc86B65D86f6a7B5B1b0c42FFA531710b6Ca",
-        "DAI": "0x50c5725949A6F0c72E6C4a641F24049A917DB0cb"
-    };
-
-    const CONTRACT_ABI = [
-        "function executeSwap(address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOutMin, bool isEthIn) external payable"
-    ];
-
-    let provider, signer, userAddress;
-
-    async function connectWallet() {
-        if (window.ethereum) {
-            try {
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                await provider.send("eth_requestAccounts", []);
-                
-                const network = await provider.getNetwork();
-                if (network.chainId !== 8453) {
-                    alert("Пожалуйста, переключите сеть в MetaMask на Base!");
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: '0x2105' }],
-                        });
-                    } catch (switchError) {
-                        return;
+        function removeInitialMatches() {
+            let hasMatches = true;
+            while (hasMatches) {
+                hasMatches = false;
+                for (let row = 0; row < BOARD_SIZE; row++) {
+                    for (let col = 0; col < BOARD_SIZE; col++) {
+                        if (checkMatch(row, col)) {
+                            board[row][col] = Math.floor(Math.random() * GEM_TYPES.length);
+                            hasMatches = true;
+                        }
                     }
                 }
-
-                signer = provider.getSigner();
-                userAddress = await signer.getAddress();
-                
-                const btn = document.getElementById("connectWalletBtn");
-                btn.innerText = userAddress.substring(0, 6) + "..." + userAddress.substring(38);
-                logStatus("Кошелек успешно подключен!");
-            } catch (error) {
-                console.error(error);
-                alert("Ошибка подключения кошелька.");
             }
-        } else {
-            alert("Установите MetaMask или Coinbase Wallet!");
-        }
-    }
-
-    async function executeRealSwap() {
-        if (!signer) {
-            alert("Сначала подключите кошелек!");
-            return;
+            updateBoard();
         }
 
-        const amountInVal = document.getElementById("amountIn").value;
-        const tokenInKey = document.getElementById("tokenIn").value;
-        const tokenOutKey = document.getElementById("tokenOut").value;
-
-        if (!amountInVal || amountInVal <= 0) {
-            alert("Введите корректную сумму для обмена!");
-            return;
-        }
-
-        if (tokenInKey === tokenOutKey) {
-            alert("Нельзя обменивать одинаковые токены!");
-            return;
-        }
-
-        try {
-            logStatus("Подготовка транзакции...");
-            const parsedAmountIn = ethers.utils.parseUnits(amountInVal, 18);
-            const tokenInAddr = TOKEN_ADDRESSES[tokenInKey];
-            const tokenOutAddr = TOKEN_ADDRESSES[tokenOutKey];
-            const isEth = (tokenInKey === "ETH");
-
-            const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-
-            logStatus("Подтвердите транзакцию в вашем кошельке...");
+        function selectGem(row, col) {
+            if (!gameActive) return;
+            const gemElement = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
             
-            const tx = await contract.executeSwap(
-                tokenInAddr,
-                tokenOutAddr,
-                parsedAmountIn,
-                0, 
-                isEth,
-                { value: isEth ? parsedAmountIn : 0 }
-            );
-
-            logStatus(`Транзакция отправлена! Хеш: ${tx.hash}`);
-            await tx.wait();
-            logStatus("Обмен успешно выполнен в сети Base! 🎉");
-
-        } catch (err) {
-            console.error(err);
-            logStatus("Ошибка: " + (err.reason || err.message));
+            if (selectedGem) {
+                document.querySelector('.gem.selected')?.classList.remove('selected');
+                if (selectedGem.row === row && selectedGem.col === col) {
+                    selectedGem = null;
+                    return;
+                }
+                if (isAdjacent(selectedGem.row, selectedGem.col, row, col)) {
+                    swapGems(selectedGem.row, selectedGem.col, row, col);
+                    selectedGem = null;
+                } else {
+                    selectedGem = { row, col };
+                    gemElement.classList.add('selected');
+                }
+            } else {
+                selectedGem = { row, col };
+                gemElement.classList.add('selected');
+            }
         }
-    }
 
-    function logStatus(text) {
-        const logBox = document.getElementById("statusLog");
-        logBox.style.display = "block";
-        logBox.innerText = text;
-    }
-</script>
+        function isAdjacent(row1, col1, row2, col2) {
+            return (Math.abs(row1 - row2) === 1 && col1 === col2) || (row1 === row2 && Math.abs(col1 - col2) === 1);
+        }
 
+        function swapGems(row1, col1, row2, col2) {
+            const temp = board[row1][col1];
+            board[row1][col1] = board[row2][col2];
+            board[row2][col2] = temp;
+            
+            const matches = findMatches();
+            if (matches.length > 0) {
+                moves--;
+                updateBoard();
+                processMatches(matches);
+                updateScore();
+                checkGameEnd();
+            } else {
+                board[row1][col1] = board[row2][col2];
+                board[row2][col2] = temp;
+                showMessage('Нет совпадений!', 'info');
+            }
+        }
+
+        function findMatches() {
+            const matches = [];
+            for (let row = 0; row < BOARD_SIZE; row++) {
+                let count = 1;
+                let currentType = board[row][0];
+                for (let col = 1; col < BOARD_SIZE; col++) {
+                    if (board[row][col] === currentType) {
+                        count++;
+                    } else {
+                        if (count >= 3) {
+                            for (let i = col - count; i < col; i++) matches.push({ row, col: i });
+                        }
+                        count = 1;
+                        currentType = board[row][col];
+                    }
+                }
+                if (count >= 3) {
+                    for (let i = BOARD_SIZE - count; i < BOARD_SIZE; i++) matches.push({ row, col: i });
+                }
+            }
+            for (let col = 0; col < BOARD_SIZE; col++) {
+                let count = 1;
+                let currentType = board[0][col];
+                for (let row = 1; row < BOARD_SIZE; row++) {
+                    if (board[row][col] === currentType) {
+                        count++;
+                    } else {
+                        if (count >= 3) {
+                            for (let i = row - count; i < row; i++) matches.push({ row: i, col });
+                        }
+                        count = 1;
+                        currentType = board[row][col];
+                    }
+                }
+                if (count >= 3) {
+                    for (let i = BOARD_SIZE - count; i < BOARD_SIZE; i++) matches.push({ row: i, col });
+                }
+            }
+            return matches;
+        }
+
+        function checkMatch(row, col) {
+            const type = board[row][col];
+            let hCount = 1, vCount = 1;
+            for (let c = col - 1; c >= 0 && board[row][c] === type; c--) hCount++;
+            for (let c = col + 1; c < BOARD_SIZE && board[row][c] === type; c++) hCount++;
+            for (let r = row - 1; r >= 0 && board[r][col] === type; r--) vCount++;
+            for (let r = row + 1; r < BOARD_SIZE && board[r][col] === type; r++) vCount++;
+            return hCount >= 3 || vCount >= 3;
+        }
+
+        function processMatches(matches) {
+            matches.forEach(m => {
+                document.querySelector(`[data-row="${m.row}"][data-col="${m.col}"]`).classList.add('matched');
+            });
+            setTimeout(() => {
+                matches.forEach(m => board[m.row][m.col] = -1);
+                dropGems();
+                fillEmpty();
+                updateBoard();
+                const newMatches = findMatches();
+                if (newMatches.length > 0) setTimeout(() => processMatches(newMatches), 300);
+            }, 600);
+            score += matches.length * 10;
+            showMessage(`Комбо! +${matches.length * 10}`, 'success');
+        }
+
+        function dropGems() {
+            for (let col = 0; col < BOARD_SIZE; col++) {
+                let writePos = BOARD_SIZE - 1;
+                for (let row = BOARD_SIZE - 1; row >= 0; row--) {
+                    if (board[row][col] !== -1) {
+                        board[writePos][col] = board[row][col];
+                        if (writePos !== row) board[row][col] = -1;
+                        writePos--;
+                    }
+                }
+            }
+        }
+
+        function fillEmpty() {
+            for (let row = 0; row < BOARD_SIZE; row++) {
+                for (let col = 0; col < BOARD_SIZE; col++) {
+                    if (board[row][col] === -1) board[row][col] = Math.floor(Math.random() * GEM_TYPES.length);
+                }
+            }
+        }
+
+        function updateBoard() {
+            for (let row = 0; row < BOARD_SIZE; row++) {
+                for (let col = 0; col < BOARD_SIZE; col++) {
+                    const el = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                    el.className = 'gem';
+                    el.textContent = GEM_TYPES[board[row][col]];
+                }
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('moves').textContent = moves;
+        }
+
+        function checkGameEnd() {
+            if (moves <= 0) {
+                gameActive = false;
+                showMessage(`Игра окончена! Счёт: ${score}`, 'info');
+            }
+        }
+
+        function showMessage(text, type) {
+            const el = document.getElementById('message');
+            el.textContent = text;
+            el.className = `message ${type}`;
+        }
+
+        function newGame() {
+            score = 0;
+            moves = 30;
+            gameActive = true;
+            selectedGem = null;
+            updateScore();
+            showMessage('Собери 3 крипто-актива в ряд!', 'info');
+            initGame();
+        }
+
+        function showHint() {
+            showMessage('Ищи пары поближе к центру!', 'info');
+        }
+
+        initGame();
+        updateScore();
+    </script>
 </body>
 </html>
+
